@@ -56,22 +56,22 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 ## Screenshots
 
 ### Agent active
-![Agent active](screenshots/01-agent-active.png)
+![Agent active](01-agent-active.png)
 
 ### Rule 92027 alert
-![Rule 92027 alert](screenshots/02-rule-92027-alert.png)
+![Rule 92027 alert](02-rule-92027-alert.png)
 
 ### Threat Hunting overview
-![Threat Hunting overview](screenshots/03-threat-hunting-overview.png)
+![Threat Hunting overview](03-threat-hunting-overview.png)
 
 ### Dashboard overview
-![Dashboard overview](screenshots/04-dashboard-overview.png)
+![Dashboard overview](04-dashboard-overview.png)
 
 ### Level 12 svchost alert
-![Level 12 svchost alert](screenshots/05-level12-svchost-triage.png)
+![Level 12 svchost alert](05-level12-svchost-triage.png)
 
 ### Rule 61618 definition
-![Rule 61618 definition](screenshots/06-rule-61618-definition.png)
+![Rule 61618 definition](06-rule-61618-definition.png)
 
 ## Dashboard
 
