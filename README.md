@@ -44,13 +44,13 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 
 ## Setup summary
 
-1. Created the Wazuh VM in UTM and installed Ubuntu Server 24.04 ARM64 (OpenSSH enabled, LVM unticked so the full disk is usable).
-2. Installed Wazuh with the official all-in-one installer and confirmed the dashboard at `https://192.168.64.2`.
+1. Created the Wazuh VM in UTM and installed Ubuntu Server 24.04 ARM64 
+2. Installed Wazuh with the official all in one installer and confirmed the dashboard at 'https://192.168.64.2'.
 3. Built a Windows 11 ARM64 ISO with CrystalFetch and installed Windows in a second VM using a local account.
-4. Deployed the Wazuh agent from the dashboard's "Deploy new agent" flow and confirmed it showed **Active**.
+4. Deployed the Wazuh agent from the dashboard's "Deploy new agent" and confirmed it showed **Active**.
 5. Installed Sysmon with the SwiftOnSecurity configuration.
 6. Added a `<localfile>` block to the agent's `ossec.conf` so it collects the `Microsoft-Windows-Sysmon/Operational` event channel, then restarted the agent.
-7. Generated test activity and confirmed it in the dashboard.
+7. Generated a test activity and confirmed it in the dashboard.
 8. Built three visualizations and combined them into one dashboard.
 
 ## Screenshots
@@ -82,13 +82,13 @@ powershell -enc VwByAGkAdABlAC0ASABvAHMAdAAgACIAdABlAHMAdAAiAA==
 
 Sysmon recorded it as an event ID 1 process creation, and Wazuh raised **rule 92027, "PowerShell process spawned PowerShell instance" (level 4)**.
 
-- **What ran:** `powershell.exe -enc ...`, launched from an interactive PowerShell window by the local lab user with high integrity (admin shell)
-- **Assessment:** benign. I ran it myself and the payload decodes to a harmless string
-- **What would change my verdict:** a parent such as Word, a browser, or `wscript.exe`; a user or time that does not fit; or a payload that downloads or executes something
+- **What ran:** `powershell.exe -enc ...`, launched from an interactive PowerShell window by the local lab user with high integrity
+- **Assessment:** not harmful. I ran it myself and the payload decodes to a harmless string
+- **What would change my verdict:** I would escalate this if it was launched by an app like Word, a web browser, or a script host such as 'wscript.exe', if it ran under an account or at a time that didn’t fit, or if the decoded command downloaded or ran something else.
 
 ### 2. Not every command raises an alert
 
-Plain `whoami` and `ipconfig` did not appear as alerts in Wazuh. By default Wazuh only stores events that match a detection rule, so routine commands are analyzed and discarded. This is a detection gap, and the natural next step is a custom rule that alerts on discovery commands run from an interactive shell.
+Plain `whoami` and `ipconfig` did not appear as alerts in Wazuh. By default, Wazuh only stores events that match a detection rule, so routine commands are analyzed and discarded. This is a detection gap, and the natural next step is a custom rule that alerts on discovery commands run from an interactive shell.
 
 ### 3. Same command, different parent
 
@@ -96,7 +96,7 @@ Plain `whoami` and `ipconfig` did not appear as alerts in Wazuh. By default Wazu
 
 ### 4. Level 12 alerts on a fresh install
 
-A new Windows install produced several level 12 alerts (for example "Sysmon - Suspicious Process - svchost.exe", rule 61618). These need to be checked, not assumed to be noise.
+A new Windows install produced several level 12 alerts (for example "Sysmon - Suspicious Process - svchost.exe", rule 61618). These need to be checked, not assumed to be false positives.
 
 > TODO: triage one of these (check `image` path, `parentImage`, and command line), then write up the verdict here.
 
