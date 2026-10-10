@@ -45,7 +45,7 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 ## Setup summary
 
 1. Created the Wazuh VM in UTM and installed Ubuntu Server 24.04 ARM64 
-2. Installed Wazuh with the official all in one installer and confirmed the dashboard at 'https://192.168.64.2'.
+2. Installed Wazuh with the official all in one installer and confirmed the dashboard at `https://192.168.64.2`.
 3. Built a Windows 11 ARM64 ISO with CrystalFetch and installed Windows in a second VM using a local account.
 4. Deployed the Wazuh agent from the dashboard's "Deploy new agent" and confirmed it showed **Active**.
 5. Installed Sysmon with the SwiftOnSecurity configuration.
