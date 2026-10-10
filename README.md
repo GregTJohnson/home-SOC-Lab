@@ -112,7 +112,7 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 
 **What the rule checks:** Only that a newly created process has `svchost.exe` as its image. It doesn't check the file path or the parent process, so it fires every time Windows starts a normal svchost. That makes it noisy.
 
-![Rule 61618 definition](screenshots/06-rule-61618-definition.png)
+![Rule 61618 definition](06-rule-61618-definition.png)
 
 **What I checked:** image path, command line, user, integrity level, working directory, file metadata, parent process, and hash.
 
@@ -123,7 +123,7 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 - **Hash:** the SHA256 was identical across every 61618 alert I reviewed
 - **Parent:** not recorded. Sysmon logged a parent PID but no `parentImage`, so I couldn't confirm it from this data.
 
-![Level 12 alert detail](screenshots/05-level12-svchost-triage.png)
+![Level 12 alert detail](05-level12-svchost-triage.png)
 
 **Verdict:** False positive. The rule matched as written, and the activity is normal Windows service startup.
 
