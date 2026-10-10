@@ -1,13 +1,13 @@
 # Home SOC Lab: Wazuh SIEM + Sysmon on Apple Silicon
 
-A small, self-contained SOC lab built to practice the day-to-day work of a Tier 1/Tier 2 analyst: collecting endpoint telemetry, reading alerts, triaging them, and documenting what I find.
+This is a small, self-contained SOC lab built to practice the day-to-day work of a Tier 1/Tier 2 analyst: collecting endpoint telemetry, reading alerts, triaging them, and documenting what I find.
 
 ## Goals
 
-- Stand up a working SIEM and a monitored Windows endpoint
+- Set up a working SIEM and a monitored Windows endpoint
 - Collect detailed process telemetry with Sysmon
 - Generate test activity and confirm it is detected (or find out where it is not)
-- Triage alerts the way an analyst would, and write the reasoning down
+- Triage alerts the way an analyst would, and write the reasoning. 
 
 ## Architecture
 
