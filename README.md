@@ -62,7 +62,8 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 ![Rule 92027 alert](02-rule-92027-alert.png)
 
 ### Threat Hunting overview
-![Threat Hunting overview](03-threat-hunting-overview.png)
+![Threat Hunting overview, part 1](03-threat-hunting-overview.png)
+![Threat Hunting overview, part 2](03b-threat-hunting-overview-part2.png)
 
 ### Dashboard overview
 ![Dashboard overview](04-dashboard-overview.png)
