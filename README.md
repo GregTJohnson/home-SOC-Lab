@@ -94,11 +94,30 @@ Plain `whoami` and `ipconfig` did not appear as alerts in Wazuh. By default, Waz
 
 `net user` raised **rule 92031, "Discovery activity executed" (level 3)**, but the parent process was `wazuh-agent.exe`, not my PowerShell session. The monitoring agent runs some commands itself, so the rule fires on the agent's own activity. The command alone says little; the parent process tells most of the story.
 
-### 4. Level 12 alerts on a fresh install
+### 4. Level 12 alerts on a fresh install: svchost triage
 
-A new Windows install produced several level 12 alerts (for example "Sysmon - Suspicious Process - svchost.exe", rule 61618). These need to be checked, not assumed to be false positives.
+A new Windows install produced several level 12 alerts, such as **rule 61618, "Sysmon - Suspicious Process - svchost.exe"** (MITRE T1055). I investigated one of them.
 
-> TODO: triage one of these (check `image` path, `parentImage`, and command line), then write up the verdict here.
+**What the rule checks:** Only that a newly created process has `svchost.exe` as its image. It doesn't check the file path or the parent process, so it fires every time Windows starts a normal svchost. That makes it noisy.
+
+![Rule 61618 definition](screenshots/06-rule-61618-definition.png)
+
+**What I checked:** image path, command line, user, integrity level, working directory, file metadata, parent process, and hash.
+
+- **Image:** `C:\Windows\System32\svchost.exe`
+- **Command line:** `svchost.exe -k GPSvcGroup` (a normal service group)
+- **User and integrity:** `NT AUTHORITY\SYSTEM`, System, session 0
+- **File metadata:** Microsoft Corporation, "Host Process for Windows Services," version matching this Windows build
+- **Hash:** the SHA256 was identical across every 61618 alert I reviewed
+- **Parent:** not recorded. Sysmon logged a parent PID but no `parentImage`, so I couldn't confirm it from this data.
+
+![Level 12 alert detail](screenshots/05-level12-svchost-triage.png)
+
+**Verdict:** False positive. The rule matched as written, and the activity is normal Windows service startup.
+
+**What would change my verdict:** an image path outside System32, a parent other than `services.exe`, a command line with no `-k`, a user other than SYSTEM, LOCAL SERVICE, or NETWORK SERVICE, or a hash that doesn't match the known-good file.
+
+**Tuning idea:** Alert only when svchost runs from outside System32 or has a parent other than `services.exe`, so real masquerading stands out. This is what I'll build as a custom rule next.
 
 ## Problems and fixes
 
