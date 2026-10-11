@@ -110,26 +110,25 @@ Plain `whoami` and `ipconfig` did not appear as alerts in Wazuh. By default, Waz
 
 A new Windows install produced several level 12 alerts, such as **rule 61618, "Sysmon - Suspicious Process - svchost.exe"** (MITRE T1055). I investigated one of them.
 
-**What the rule checks:** Only that a newly created process has `svchost.exe` as its image. It doesn't check the file path or the parent process, so it fires every time Windows starts a normal svchost. That makes it noisy.
+**What the rule checks:** Only that a newly created process has `svchost.exe` as its image. It doesn't check the file path or the parent process, so it fires every time Windows starts a normal svchost. That can cause alert fatigue.
 
 ![Rule 61618 definition](06-rule-61618-definition.png)
 
-**What I checked:** image path, command line, user, integrity level, working directory, file metadata, parent process, and hash.
+**What I checked:** image path, command line, user, integrity level, working directory, file metadata, and hash.
 
 - **Image:** `C:\Windows\System32\svchost.exe`
 - **Command line:** `svchost.exe -k GPSvcGroup` (a normal service group)
 - **User and integrity:** `NT AUTHORITY\SYSTEM`, System, session 0
 - **File metadata:** Microsoft Corporation, "Host Process for Windows Services," version matching this Windows build
 - **Hash:** the SHA256 was identical across every 61618 alert I reviewed
-- **Parent:** not recorded. Sysmon logged a parent PID but no `parentImage`, so I couldn't confirm it from this data.
 
 ![Level 12 alert detail](05-level12-svchost-triage.png)
 
 **Verdict:** False positive. The rule matched as written, and the activity is normal Windows service startup.
 
-**What would change my verdict:** an image path outside System32, a parent other than `services.exe`, a command line with no `-k`, a user other than SYSTEM, LOCAL SERVICE, or NETWORK SERVICE, or a hash that doesn't match the known-good file.
+**What would change my verdict:** an image path outside System32, a parent other than `services.exe`, a command line with no `-k`, a user other than SYSTEM, LOCAL SERVICE, or NETWORK SERVICE, or a hash that doesn't match the known good file.
 
-**Tuning idea:** Alert only when svchost runs from outside System32 or has a parent other than `services.exe`, so real masquerading stands out. This is what I'll build as a custom rule next.
+**Detection tuning idea:** Alert only when svchost runs from outside System32 or has a parent other than `services.exe`, so real masquerading stands out. This is what I'll build as a custom rule next.
 
 ## Problems and fixes
 
@@ -146,13 +145,11 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 
 ## Lessons learned
 
-- A VM that freezes after a forced stop is a disk-space red flag, not just a RAM one. Keep at least 20 GB free and avoid cloning large VMs.
-- Parent process context is what separates a benign alert from a serious one.
+- A VM that freezes after a forced stop is a disk space red flag, not just a RAM one. Keep at least 20 GB free and avoid cloning large VMs if you're lacking disk space.
 - A SIEM that stores only rule matches will quietly miss routine reconnaissance, which is why custom detections matter.
 
 ## Next steps
 
 - Write custom detection rules (Sigma or Wazuh rules) for discovery commands and encoded PowerShell, and tune false positives
 - Run Atomic Red Team tests and map results to MITRE ATT&CK
-- Write alert-triage playbooks (phishing, brute force, malware on endpoint)
-- Triage the level 12 svchost alerts and document the verdict
+- Write alert triage playbooks (phishing, brute force, malware on endpoint)
