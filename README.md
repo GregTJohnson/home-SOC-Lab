@@ -13,14 +13,12 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 
 ![Architecture diagram](architecture-diagram.png)
 
-
-
 ## Components
 
 | Component | Details |
 |---|---|
 | Host | Apple Silicon Mac mini, 16 GB RAM |
-| Hypervisor | UTM (Apple Virtualization), Shared Network mode |
+| Hypervisor | UTM (Virtualize mode), Shared Network mode |
 | SIEM | Wazuh 4.x all-in-one install on Ubuntu Server 24.04 LTS (ARM64), 5 GB RAM, 2 cores, 40 GB disk |
 | Endpoint | Windows 11 ARM64 (build 26100), 4 GB RAM, 2 cores, 64 GB disk, ISO built with CrystalFetch |
 | Endpoint telemetry | Wazuh agent + Sysmon v15.22 (`Sysmon64a.exe`, the ARM64 build) with the SwiftOnSecurity config |
@@ -28,12 +26,12 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 ## Setup summary
 
 1. Created the Wazuh VM in UTM and installed Ubuntu Server 24.04 ARM64 
-2. Installed Wazuh with the official all in one installer and confirmed the dashboard at `https://192.168.64.2`.
+2. Installed Wazuh with the official all-in-one installer and confirmed the dashboard at `https://192.168.64.2`.
 3. Built a Windows 11 ARM64 ISO with CrystalFetch and installed Windows in a second VM using a local account.
 4. Deployed the Wazuh agent from the dashboard's "Deploy new agent" and confirmed it showed **Active**.
 5. Installed Sysmon with the SwiftOnSecurity configuration.
 6. Added a `<localfile>` block to the agent's `ossec.conf` so it collects the `Microsoft-Windows-Sysmon/Operational` event channel, then restarted the agent.
-7. Generated a test activity and confirmed it in the dashboard.
+7. Generated test activity and confirmed it in the dashboard.
 8. Built three visualizations and combined them into one dashboard.
 
 ## Screenshots
@@ -79,7 +77,7 @@ Sysmon recorded it as an event ID 1 process creation, and Wazuh raised **rule 92
 
 - **What ran:** `powershell.exe -enc ...`, launched from an interactive PowerShell window by the local lab user with high integrity
 - **Assessment:** not harmful. I ran it myself and the payload decodes to a harmless string
-- **What would change my verdict:** I would escalate this if it was launched by an app like Word, a web browser, or a script host such as 'wscript.exe', if it ran under an account or at a time that didn’t fit, or if the decoded command downloaded or ran something else.
+- **What would change my verdict:** I would escalate this if it was launched by an app like Word, a web browser, or a script host such as `wscript.exe`, if it ran under an account or at a time that didn't fit, or if the decoded command downloaded or ran something else.
 
 ### 2. Not every command raises an alert
 
@@ -97,14 +95,15 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 
 ![Rule 61618 definition](06-rule-61618-definition.png)
 
-**What I checked:** image path, command line, user, integrity level, working directory, file metadata, and hash.
+**What I checked:** image path, command line, user, integrity level, working directory, parent process, file metadata, and hash.
 
 - **Image:** `C:\Windows\System32\svchost.exe`
 - **Command line:** `svchost.exe -k GPSvcGroup` (a normal service group)
 - **User and integrity:** `NT AUTHORITY\SYSTEM`, System, session 0
 - **File metadata:** Microsoft Corporation, "Host Process for Windows Services," version matching this Windows build
 - **Hash:** the SHA256 was identical across every 61618 alert I reviewed
-
+- **Parent:** not recorded. Sysmon logged a parent process ID but no parent image, so I couldn't confirm it from this data.
+  
 ![Level 12 alert detail](05-level12-svchost-triage.png)
 
 **Verdict:** False positive. The rule matched as written, and the activity is normal Windows service startup.
@@ -117,7 +116,7 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 
 | Problem | Cause | Fix |
 |---|---|---|
-| Could not get CrystalFetch from the App Store | Apple account payment issue blocked even free downloads | Downloaded the `.dmg` from the project's GitHub releases page |
+| Could not get CrystalFetch from the App Store | App Store download unavailable | Downloaded the `.dmg` from the project's GitHub releases page |
 | Wazuh VM would not boot the installer | The Windows ISO was attached to the Ubuntu VM | Re-attached the Ubuntu Server ARM64 ISO to the CD/DVD drive |
 | Windows setup: "system drive needs to be at least 52 GB" | Windows 11 24H2 minimum; the virtual disk was 50 GB | Resized the disk to 64 GB (dynamically allocated) |
 | PowerShell commands failed with "path does not exist" | Pasted lines merged together (`dir Sysmoncd Sysmon`) | Ran each command separately, one paste at a time |
@@ -130,7 +129,8 @@ A new Windows install produced several level 12 alerts, such as **rule 61618, "S
 
 - A VM that freezes after a forced stop is a disk space red flag, not just a RAM one. Keep at least 20 GB free and avoid cloning large VMs if you're lacking disk space.
 - A SIEM that stores only rule matches will quietly miss routine reconnaissance, which is why custom detections matter.
-
+- parent process tells most of the story
+- 
 ## Next steps
 
 - Write custom detection rules (Sigma or Wazuh rules) for discovery commands and encoded PowerShell, and tune false positives
