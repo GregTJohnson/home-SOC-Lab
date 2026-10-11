@@ -11,24 +11,7 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
 
 ## Architecture
 
-```
-+-----------------------------------------------------------+
-|  Apple Silicon Mac mini (16 GB RAM) running UTM            |
-|  Shared network: 192.168.64.0/24                           |
-|                                                            |
-|  +---------------------+        +-----------------------+  |
-|  | win-victim01        |  logs  | wazuh-server          |  |
-|  | Windows 11 ARM64    +------->+ Ubuntu Server 24.04   |  |
-|  | Wazuh agent         |        | Wazuh manager,        |  |
-|  | Sysmon              |        | indexer, dashboard    |  |
-|  | 192.168.64.x        |        | 192.168.64.2          |  |
-|  +---------------------+        +-----------+-----------+  |
-|                                             |              |
-+---------------------------------------------|--------------+
-                                              v
-                               Wazuh dashboard (https://192.168.64.2)
-                               viewed from the host browser
-```
+![Architecture diagram](architecture-diagram.png)
 
 
 
