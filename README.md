@@ -30,7 +30,7 @@ This is a small, self-contained SOC lab built to practice the day-to-day work of
                                viewed from the host browser
 ```
 
-`architecture-diagram.png`.
+
 
 ## Components
 
